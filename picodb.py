@@ -16,3 +16,23 @@ class Disconnect(Exception):
 Error = namedtuple('Error', ('message',))
 
 
+class ProtocolHandler(object):
+    # Parse a request from the client into its component parts.
+    def handle_request(self, socket_file):
+        pass
+
+    # Serialize the response data and send it to the client.
+    def write_response(self, socket_file, data):
+        pass
+    
+class Server(object):
+    def __init__(self, host='127.0.0.1', port=31337, max_clients=64):
+        self._pool = Pool(max_clients)
+        self._server = StreamServer(
+            (host, port),
+            self.connection_handler,
+            spawn=self._pool)
+
+        self._protocol = ProtocolHandler()
+        self._kv = {}
+     

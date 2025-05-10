@@ -15,7 +15,6 @@ class Disconnect(Exception):
 ## Structuring Error Messages for Readability
 Error = namedtuple('Error', ('message',))
 
-
 class ProtocolHandler(object):
     # Parse a request from the client into its component parts.
     def handle_request(self, socket_file):
@@ -35,4 +34,27 @@ class Server(object):
 
         self._protocol = ProtocolHandler()
         self._kv = {}
-     
+
+def connection_handler(self, conn, address):
+        # Convert "conn" (a socket object) into a file-like object.
+        socket_file = conn.makefile('rwb')
+
+        # Processes client requests until client disconnects.
+        while True:
+            try:
+                data = self._protocol.handle_request(socket_file)
+            except Disconnect:
+                break
+
+            try:
+                resp = self.get_response(data)
+            except CommandError as exc:
+                resp = Error(exc.args[0])
+
+            self._protocol.write_response(socket_file, resp)
+
+def get_response(self, data):
+        pass
+
+def run(self):
+        self._server.serve_forever()

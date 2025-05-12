@@ -130,10 +130,12 @@ class Server(object):
             raise CommandError('Missing command')
 
         command = data[0].upper()
+        
         if command not in self._commands:
             raise CommandError('Unrecognized command: %s' % command)
 
         return self._commands[command](*data[1:])
+    
     def get(self, key):
         return self._kv.get(key)
 

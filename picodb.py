@@ -16,9 +16,26 @@ class Disconnect(Exception):
 Error = namedtuple('Error', ('message',))
 
 class ProtocolHandler(object):
+    def __init__(self):
+        self.handlers = {
+            '+': self.handle_simple_string,
+            '-': self.handle_error,
+            ':': self.handle_integer,
+            '$': self.handle_string,
+            '*': self.handle_array,
+            '%': self.handle_dict}
+        
     # Parse a request from the client into its component parts.
     def handle_request(self, socket_file):
-        pass
+        first_byte = socket_file.read(1)
+        if not first_byte:
+            raise Disconnect()
+
+        try:
+            # Delegate to the appropriate handler based on the first byte.
+            return self.handlers[first_byte](socket_file)
+        except KeyError:
+            raise CommandError('Bad Request')
 
     # Serialize the response data and send it to the client.
     def write_response(self, socket_file, data):

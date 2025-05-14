@@ -180,6 +180,8 @@ class Server(object):
                     resp = Error(exc.args[0])
 
                self._protocol.write_response(socket_file, resp)
+    def run(self):
+        self._server.serve_forever()
 
 class Client(object):
     def __init__(self, host='127.0.0.1', port=31337):
@@ -213,8 +215,7 @@ class Client(object):
     def mset(self, *items):
         return self.execute('MSET', *items)
     
-    def run(self):
-        self._server.serve_forever()
+    
 
 
 

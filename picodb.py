@@ -108,7 +108,7 @@ class Server(object):
         self._protocol = ProtocolHandler()
         self._kv = {}
 
-        self.commands = self.get_commands()
+        self._commands = self.get_commands()
 
     def get_commands(self):
           return {
@@ -163,23 +163,23 @@ class Server(object):
             self._kv[key] = value
         return len(data)
 
-def connection_handler(self, conn, address):
-        # Convert "conn" (a socket object) into a file-like object.
-        socket_file = conn.makefile('rwb')
+    def connection_handler(self, conn, address):
+          # Convert "conn" (a socket object) into a file-like object.
+          socket_file = conn.makefile('rwb')
 
-        # Processes client requests until client disconnects.
-        while True:
-            try:
-                data = self._protocol.handle_request(socket_file)
-            except Disconnect:
-                break
+          # Processes client requests until client disconnects.
+          while True:
+               try:
+                    data = self._protocol.handle_request(socket_file)
+               except Disconnect:
+                    break
 
-            try:
-                resp = self.get_response(data)
-            except CommandError as exc:
-                resp = Error(exc.args[0])
+               try:
+                    resp = self.get_response(data)
+               except CommandError as exc:
+                    resp = Error(exc.args[0])
 
-            self._protocol.write_response(socket_file, resp)
+               self._protocol.write_response(socket_file, resp)
 
 class Client(object):
     def __init__(self, host='127.0.0.1', port=31337):
@@ -212,10 +212,12 @@ class Client(object):
 
     def mset(self, *items):
         return self.execute('MSET', *items)
-
-
-def run(self):
+    
+    def run(self):
         self._server.serve_forever()
+
+
+
 
 if __name__ == '__main__':
     from gevent import monkey; monkey.patch_all()
